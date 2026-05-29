@@ -32,7 +32,7 @@ while True:
     mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
     mask = cv2.bitwise_or(mask1, mask2)
 
-    # removing noises - درست کردن این خطوط
+    # removing noises 
     mask = cv2.erode(mask, None, iterations=2)
     mask = cv2.dilate(mask, None, iterations=2)
 
@@ -72,6 +72,6 @@ while True:
 
 log_file.close()
 print("all comands saved")
-# آزادسازی منابع - اینها باید خارج از حلقه while باشند
+
 vid.release()
 cv2.destroyAllWindows()
