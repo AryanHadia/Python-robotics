@@ -5,7 +5,6 @@ import cv2
 
 
 class Colors_HSV(): # colors HSV data for opencv projects
-    # فقط یک دیکشنری ساده  
     def __init__(self) -> None: 
         self.COLORS_HSV = {
         'red': [(np.array([0,50,50]), np.array([10,255,255])),
@@ -25,4 +24,5 @@ class Colors_HSV(): # colors HSV data for opencv projects
         return cv2.bitwise_or(masks[0], masks[1]) if len(masks) > 1 else masks[0]
     
     def colors_list(self): # colors list
+        return ("red" , "blue" , "green" , "purple" , "yellow" , "orange" , "brown")
         return ("red" , "blue" , "green" , "purple" , "yellow" , "orange" , "brown")
