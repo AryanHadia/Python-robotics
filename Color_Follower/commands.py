@@ -1,9 +1,12 @@
 from Arduino_connect import Arduino
+import time
 
 class CommandSender:
     def __init__(self):
         self.robot = Arduino()
         self.robot.connection()
+        time.sleep(8)
+
         self.last_command = None
 
     def processor(self, center_x, center_s, dist):
@@ -20,17 +23,16 @@ class CommandSender:
             self._send(b"Scan_right\n")
         elif center_s - 100 < center_x < center_s - 50:
             self._send(b"Scan_left\n")
+        elif dist == "Far":
+            self._send(b"Forward\n")
+        elif dist == "Close":
+            self._send(b"Backward\n")
         else:
-            if dist == "Far":
-                self._send(b"Forward\n")
-            elif dist == "Close":
-                self._send(b"Backward\n")
-            else:
-                self._send(b"Stop\n")
+            self._send(b"Stop\n")
 
     def _send(self, command):
         if command != self.last_command:
-            time.sleep(0.05)  # کمی تأخیر بین فرمان‌ها
+            time.sleep(0.05)
             self.robot.send_command(command)
             self.last_command = command
 
