@@ -1,97 +1,77 @@
-int m1p1 = 5;
-int m1p2 = 3;
-int m2p1 = 6;
-int m2p2 = 9;
+int led1 = 2;
+int led2 = 3;
 
 void setup() {
     Serial.begin(9600);
-    pinMode(m1p1, OUTPUT);
-    pinMode(m1p2, OUTPUT);
-    pinMode(m2p1, OUTPUT);
-    pinMode(m2p2, OUTPUT);
+    pinMode(led1, OUTPUT);
+    pinMode(led2, OUTPUT);
     stop();
+    Serial.println("READY");   
 }
 
 void loop() {
     if (Serial.available() > 0) {
-        String cmd = Serial.readString();
-        cmd.trim();
-        
-        if (cmd == "Forward") {
-            forward();
-        }
-        else if (cmd == "Backward") {
-            backward();
-        }
-        else if (cmd == "Stop") {
-            stop();
-        }
-        else if (cmd == "Turn_right") {
-            turnRight();
-        }
-        else if (cmd == "Turn_left") {
-            turnLeft();
-        }
-        else if (cmd == "Scan_left") {
-            scanLeft();
-        }
-        else if (cmd == "Scan_right") {
-            scanRight();
+        char cmd = Serial.read();
+        while (Serial.available()) Serial.read();
+
+  
+        switch (cmd) {
+            case 'F':   // Forward
+                forward();
+                break;
+            case 'B':   // Backward
+                backward();
+                break;
+            case 'R':   // Turn Right
+                turnRight();
+                break;
+            case 'L':   // Turn Left
+                turnLeft();
+                break;
+            case 'S':   // Stop
+                stop();
+                break;
+            case 'SR': // scan right
+                stop();
+                break;
+            case 'SL': // scan left
+                stop();
+                break;
         }
     }
 }
 
 void forward() {
-    analogWrite(m1p1, 60);
-    analogWrite(m1p2, 0);
-    analogWrite(m2p1, 60);
-    analogWrite(m2p2, 0);
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
 }
 
 void backward() {
-    analogWrite(m1p1, 0);
-    analogWrite(m1p2, 60);
-    analogWrite(m2p1, 0);
-    analogWrite(m2p2, 60);
+    digitalWrite(led1, HIGH);   
+    digitalWrite(led2, HIGH);
 }
 
 void stop() {
-    analogWrite(m1p1, 0);
-    analogWrite(m1p2, 0);
-    analogWrite(m2p1, 0);
-    analogWrite(m2p2, 0);
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, LOW);
 }
 
 void turnRight() {
-    // چرخش به راست بدون توقف خودکار
-    analogWrite(m1p1, 60);
-    analogWrite(m1p2, 0);
-    analogWrite(m2p1, 0);
-    analogWrite(m2p2, 60);
-    // حذف delay و stop
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, LOW);
 }
 
 void turnLeft() {
-    // چرخش به چپ بدون توقف خودکار
-    analogWrite(m1p1, 0);
-    analogWrite(m1p2, 60);
-    analogWrite(m2p1, 60);
-    analogWrite(m2p2, 0);
-    // حذف delay و stop
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, HIGH);
 }
 
-void scanLeft() {
-    // اسکن به چپ (آهسته) بدون توقف خودکار
-    analogWrite(m1p1, 0);
-    analogWrite(m1p2, 40);
-    analogWrite(m2p1, 0);
-    analogWrite(m2p2, 0);
+void scanleft() {
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, HIGH);
 }
 
-void scanRight() {
-    // اسکن به راست (آهسته) بدون توقف خودکار
-    analogWrite(m1p1, 0);
-    analogWrite(m1p2, 0);
-    analogWrite(m2p1, 0);
-    analogWrite(m2p2, 40);
+void scanright() {
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, LOW);
 }
