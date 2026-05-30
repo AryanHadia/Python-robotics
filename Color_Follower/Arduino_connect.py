@@ -78,10 +78,10 @@ class Arduino:
         try:
             self.serial_connection.write(command)
             self.last_command = command
-            print(f"📡 Sent RAW: {command}")  # چاپ خام فرمان برای دیباگ
+            print(f"* Sent RAW: {command}")  # چاپ خام فرمان برای دیباگ
             return True
         except Exception as e:
-            print(f"❌ Failed to send command | Error: {e}")
+            print(f" Failed to send command | Error: {e}")
             self.is_connected = False
             return False
 
@@ -94,22 +94,22 @@ class Arduino:
 
     # ========== Commands ==========
     def turn_right(self):
-        return self.send_command(b"Turn_right\n")
+        return self.send_command(b"R\n")
 
     def turn_left(self):
-        return self.send_command(b"Turn_left\n")
+        return self.send_command(b"L\n")
 
     def scan_right(self):
-        return self.send_command(b"Scan_right\n")
+        return self.send_command(b"SR\n")
 
     def scan_left(self):
-        return self.send_command(b"Scan_left\n")
+        return self.send_command(b"SL\n")
 
     def stop(self):
-        return self.send_command(b"Stop\n")
+        return self.send_command(b"S\n")
 
     def forward(self):
-        return self.send_command(b"Forward\n")
+        return self.send_command(b"F\n")
 
     def backward(self):
-        return self.send_command(b"Backward\n")
+        return self.send_command(b"B\n")
