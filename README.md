@@ -18,3 +18,4 @@ This is where I learn to give **eyes** to my robots.
 2. Open Run.py:
    ```bash
    python Run.py
+3. Select one of the mmenu colors
