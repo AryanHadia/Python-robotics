@@ -1,10 +1,20 @@
-int led1 = 2;
-int led2 = 3;
+int m1p1 = 3;
+int m1p2 = 5;
+int m2p1 = 6;
+int m2p2 = 9;
+int CL = 4;
+int motor_speed;
+int scan_speed;
 
 void setup() {
+    motor_speed = 90;
+    scan_speed = 40;
     Serial.begin(9600);
-    pinMode(led1, OUTPUT);
-    pinMode(led2, OUTPUT);
+    pinMode(m1p1, OUTPUT);
+    pinMode(m1p2, OUTPUT);
+    pinMode(m2p1, OUTPUT);
+    pinMode(m2p2, OUTPUT);
+    pinMode(CL, OUTPUT);
     stop();
     Serial.println("READY");   
 }
@@ -13,65 +23,74 @@ void loop() {
     if (Serial.available() > 0) {
         char cmd = Serial.read();
         while (Serial.available()) Serial.read();
-
   
         switch (cmd) {
-            case 'F':   // Forward
-                forward();
-                break;
-            case 'B':   // Backward
-                backward();
-                break;
-            case 'R':   // Turn Right
-                turnRight();
-                break;
-            case 'L':   // Turn Left
-                turnLeft();
-                break;
-            case 'S':   // Stop
-                stop();
-                break;
-            case 'SR': // scan right
-                stop();
-                break;
-            case 'SL': // scan left
-                stop();
-                break;
+            case 'F': forward(); break;
+            case 'B': backward(); break;
+            case 'R': turnRight(); break;
+            case 'L': turnLeft(); break;
+            case 'S': stop(); break;
+            case 'E': scanRight(); break;   
+            case 'W': scanLeft(); break;    
+            case 'N': lightOn(); break;     
+            case 'M': lightOff(); break;    
         }
     }
 }
 
 void forward() {
-    digitalWrite(led1, HIGH);
-    digitalWrite(led2, HIGH);
+    analogWrite(m1p1, motor_speed);
+    analogWrite(m1p2, 0);
+    analogWrite(m2p1, motor_speed);
+    analogWrite(m2p2, 0);
 }
 
 void backward() {
-    digitalWrite(led1, HIGH);   
-    digitalWrite(led2, HIGH);
+    analogWrite(m1p1, 0);
+    analogWrite(m1p2, motor_speed);
+    analogWrite(m2p1, 0);
+    analogWrite(m2p2, motor_speed);
 }
 
 void stop() {
-    digitalWrite(led1, LOW);
-    digitalWrite(led2, LOW);
+    analogWrite(m1p1, 0);
+    analogWrite(m1p2, 0);
+    analogWrite(m2p1, 0);
+    analogWrite(m2p2, 0);
 }
 
 void turnRight() {
-    digitalWrite(led1, HIGH);
-    digitalWrite(led2, LOW);
+    analogWrite(m1p1, motor_speed);
+    analogWrite(m1p2, 0);
+    analogWrite(m2p1, 0);
+    analogWrite(m2p2, scan_speed);
 }
 
 void turnLeft() {
-    digitalWrite(led1, LOW);
-    digitalWrite(led2, HIGH);
+    analogWrite(m1p1, 0);
+    analogWrite(m1p2, scan_speed);
+    analogWrite(m2p1, motor_speed);
+    analogWrite(m2p2, 0);
 }
 
-void scanleft() {
-    digitalWrite(led1, LOW);
-    digitalWrite(led2, HIGH);
+void scanLeft() {
+    analogWrite(m1p1, 0);
+    analogWrite(m1p2, 0);
+    analogWrite(m2p1, scan_speed);
+    analogWrite(m2p2, 0);
 }
 
-void scanright() {
-    digitalWrite(led1, HIGH);
-    digitalWrite(led2, LOW);
+void scanRight() {
+    analogWrite(m1p1, scan_speed);
+    analogWrite(m1p2, 0);
+    analogWrite(m2p1, 0);
+    analogWrite(m2p2, 0);
+}
+
+void lightOn() {
+    digitalWrite(CL, HIGH);
+}
+
+void lightOff() {
+    digitalWrite(CL, LOW);
 }
