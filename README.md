@@ -15,3 +15,6 @@ This is where I learn to give **eyes** to my robots.
 1. Install OpenCV:
    ```bash
    pip install opencv-python numpy
+2. Open Run.py:
+   ```bash
+   python Run.py
