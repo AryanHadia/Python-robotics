@@ -7,6 +7,7 @@ def menu():
     for _ in CH().colors_list(): # for every color in the list
         print(_)
     print("exite = 0")
+    print("You can stop program with pressing (q)")
     print("============================================")
 
 menu()
