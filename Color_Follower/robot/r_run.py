@@ -10,8 +10,10 @@ STREAM_PORT = 5000
 COMMAND_PORT = 5001
 
 
-PYTHON_VENV = '/home/aryan/myenv/bin/python3'  
-COMMAND_RECEIVER_PATH = 'c_receiver.py'
+PYTHON_VENV = '/home/aryan/myenv/bin/python3'
+
+
+COMMAND_RECEIVER_PATH = '/home/aryan/c_receiver.py'  # ← این را به مسیر واقعی تغییر بده
 
 processes = []
 
@@ -41,7 +43,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 def main():
     print("Starting Robot System on Raspberry Pi...")
     
-    # cam stream
+
     print(f"Starting camera stream on port {STREAM_PORT}...")
     stream_cmd = f"ffmpeg -f v4l2 -framerate 15 -video_size 640x480 -i {CAMERA_DEVICE} -f mjpeg - 2>/dev/null | nc -l -p {STREAM_PORT}"
     p1 = subprocess.Popen(stream_cmd, shell=True, preexec_fn=os.setsid)
@@ -49,7 +51,6 @@ def main():
     print("Camera stream started")
     time.sleep(2)
     
-    # command_reciver
     print(f"Starting command server on port {COMMAND_PORT}...")
     p2 = subprocess.Popen([PYTHON_VENV, COMMAND_RECEIVER_PATH], preexec_fn=os.setsid)
     processes.append(p2)
