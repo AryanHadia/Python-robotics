@@ -17,6 +17,7 @@ class Receive:
             with open('raspi_ip.txt', 'r') as f:
                 ip = f.read().strip()
                 if ip:
+                    self.test_ip()
                     return ip
         except:
             pass
@@ -26,12 +27,25 @@ class Receive:
             f.write(ip)
         return ip
 
+    def test_ip(self , ip):
+        port = 5000
+        try:
+            test_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            test_sock.settimeout(2)  # 2 seconds timeout
+            test_sock.connect((ip, port))
+            test_sock.close()
+            print(f"IP {ip} is reachable")
+            return True
+        except Exception as e:
+            print(f"Cannot reach {ip}:{port} - {e}")
+            return False
+
     def _connect(self):
         """Connect once (will be called only in __init__)"""
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.ip, self.port))
         self.sock.settimeout(0.5)
-        print(f"✅ Connected to {self.ip}:{self.port}")
+        print(f"Connected to {self.ip}:{self.port}")
 
     def receive_frame(self):
         """
@@ -70,4 +84,4 @@ class Receive:
     def close(self):
         if self.sock:
             self.sock.close()
-            print("🔌 Connection closed")
+            print("Connection closed")
