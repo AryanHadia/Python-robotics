@@ -1,55 +1,48 @@
-import socket
-import os
+from command_sender import command_sender
+import time
 
-class command_sender:
+class CommandSender:
     def __init__(self):
-        self.port = 5001
-        self.s = None
-        self.is_connected = False
-        self._connect()
-        
+        self.robot = command_sender()
 
-    def _get_ip(self): # getting ip from last connection
-        ip_file = 'rasPI_ip.txt'
-
-        # if file exist
-        if os.path.exists(ip_file):
-            with open(ip_file, 'r') as f:
-                ip = f.read().strip()
-                if ip:
-                    return ip
-        # if no ip found
-        input("please enter your raspi ip: ").strip()
-        return ip
-
-
-    def _connect(self): # connecting
-        try: # try connectiong
-            ip = self._get_ip()
-            s = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
-            self.s = s
-            self.s.connect((ip , self.port))
-            print(f"connected on {ip}:{self.port}") 
-        except Exception as e: # if not connected
-            print(f'Failed to connect !! | Error: {e}')
-            print("Running on simulation mode ...")
-            self.is_connected = False
-
+    def processor(self, center_x, center_s, dist , shape):
+        if shape is None: # if no shape found
+            self._send(b"E") # scan left
+            time.sleep(0.5) # wait 1 second
+            self._send(b"W")
+            return
     
-    def send(self , command): # sending commands
-        if self.is_connected is True: # if connected
-            try:
-                self.s.sendall(command) # send command to all
-                print(f"sent: {command}")
-            except Exception as e: # if failed to send command
-                print(f"Failed to send command | Error: {e}")
-        
-        else:
-            print(f"[simulation]: {command}")
+        if center_x > center_s + 100: # turn right
+            self._send(b"R")
+        elif center_x < center_s - 100: # turn left
+            self._send(b"L")
+        elif center_s + 50 < center_x < center_s + 100: # scan right
+            self._send(b"E")
+        elif center_s + 10 < center_x < center_s + 50: # slowly scan right
+            self._send(b"E")
+        elif center_s - 10 > center_x > center_s - 50: # slowly scan left
+            self._send(b"W")
+        elif center_s - 50 > center_x > center_s - 100: # scan left
+            self._send(b"W")
+        else: # stop
+            if dist == "Far": # forward
+                self._send(b"F")
+            elif dist == "Close": # Backward
+                self._send(b"B")
+            else: # stop
+                self._send(b"S")
+        return 
+
+    def _send(self, command_bytes):
+        self.robot.send(command_bytes)
 
 
-    def close(self): # closing connection
-        if self.s:
-            self.s.close()
-            print("connection closed !!")
-        self.is_connected = False
+    def close(self):
+        """Stop robot and close connection"""
+        try:
+            self.robot.send(b"S")  
+            time.sleep(0.05)
+        except Exception as e:
+            print(f"Stop error: {e}")
+        finally:
+            self.robot.close()
