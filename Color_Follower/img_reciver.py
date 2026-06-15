@@ -1,3 +1,5 @@
+from multiprocessing import Value
+from shutil import ExecError
 import socket
 import numpy as np
 import cv2
@@ -9,43 +11,58 @@ class Receive:
         self.port = 5000
         self.data = b''
         self.sock = None
+        self.is_connected = False
+        self.connect_at = 0
         self._connect()
 
     def _get_ip(self):
-        """Get IP once from file or user"""
         try:
-            with open('raspi_ip.txt', 'r') as f:
-                ip = f.read().strip()
-                if ip:
-                    self.test_ip()
-                    return ip
-        except:
-            pass
-        
-        ip = input("Enter Raspberry Pi IP: ").strip()
-        with open('raspi_ip.txt', 'w') as f:
-            f.write(ip)
-        return ip
-
-    def test_ip(self , ip):
-        port = 5000
-        try:
-            test_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            test_sock.settimeout(2)  # 2 seconds timeout
-            test_sock.connect((ip, port))
-            test_sock.close()
-            print(f"IP {ip} is reachable")
-            return True
+            file = open('rasPI_ip.txt' , 'r')
+            ip = file.read()
+            file.close()
         except Exception as e:
-            print(f"Cannot reach {ip}:{port} - {e}")
-            return False
+            print(f"Failed to open file | Error: {e}")
+        if not ip.strip() : # no ip found
+            print("No ip found")
+            self.ip = input("Please enter your RasPi ip: ").lower()
+            return
+        else:
+            a = input(f"is {ip} youre RasPi ip ?(y/n) ").lower()
+            while a != 'y' and a != 'n': # unvalied entry (loop unnty true entry received)
+                print("Please just sey (y/n) !!")
+                a = input(f"is {ip} youre RasPi ip ?(y/n) ").lower()
+            if a == 'y':
+                self.ip = ip
+                return self.ip
+            elif a == 'n':
+                self.ip = input ('Please enter your RasPi ip: ')
+                return self.ip
+
+
 
     def _connect(self):
-        """Connect once (will be called only in __init__)"""
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.ip, self.port))
-        self.sock.settimeout(0.5)
-        print(f"Connected to {self.ip}:{self.port}")
+        try: # try to connect
+            """Connect once (will be called only in __init__)"""
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((self.ip, self.port))
+            self.sock.settimeout(0.5)
+            self.is_connected = True
+            print(f"Connected to {self.ip}:{self.port}")
+            return
+        except Exception as e: # if failed try five times to connect
+            print(f"Failed to connect !! | Error:{e}")
+            print("retrying !!")
+            self.connect_at += 1
+            for _ in range(5):
+                if self.connect_at >= 5:
+                    print(f"Connecting attempt {self.connect_at}")
+                    self._connect()
+                else: return
+        finally:
+            file = open('rasPi_ip.txt' , 'w')
+            file.write(self.ip)
+            file.close()
+
 
     def receive_frame(self):
         """
